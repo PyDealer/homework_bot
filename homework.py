@@ -10,10 +10,6 @@ import telegram
 
 load_dotenv()
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO)
-
 PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('CHAT_ID')
@@ -30,20 +26,27 @@ HOMEWORK_VERDICTS = {
 }
 
 
+# Привет. Если делать проверку без цикла через return all(),
+# исключение и функция не отрабатывают как надо.
+# Функция возвращает True/False, а до исключения не доходит.
+# Сделал через ветвление
 def check_tokens():
     """Проверяет доступность переменных окружения."""
     virable_list = [PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]
     try:
-        for virable in virable_list:
-            all(virable)
-    except Exception as error:
+        if all(virable_list) is True:
+            return all(virable_list)
+        else:
+            raise Exception
+    except Exception:
         logging.critical(
-            f'Одной из переменных окружения не существует: {error}')
+            'Одной из глобальных переменных окружения не существует')
         sys.exit()
 
 
 def send_message(bot, message):
     """Отправляет сообщение в телеграм."""
+    logging.info('Попытка отправить сообщение.')
     if message:
         logging.debug('Сообщение отправлено.')
         return bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
@@ -88,11 +91,16 @@ def parse_status(homework):
 
 def main():
     """Основная логика работы бота."""
+    logging.basicConfig(
+        filename='main.log',
+        level=logging.INFO,
+        encoding='utf-8',
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    check_tokens()
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    timestamp = int(time.time())
     while True:
+        timestamp = int(time.time())
         try:
-            check_tokens()
             response = get_api_answer(timestamp)
             check_response(response)
             if len(response.get('homeworks')) != 0:
