@@ -26,21 +26,15 @@ HOMEWORK_VERDICTS = {
 }
 
 
-# Привет. Если делать проверку без цикла через return all(),
-# исключение и функция не отрабатывают как надо.
-# Функция возвращает True/False, а до исключения не доходит.
-# Сделал через ветвление
 def check_tokens():
     """Проверяет доступность переменных окружения."""
     virable_list = [PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]
     try:
-        if all(virable_list) is True:
-            return all(virable_list)
-        else:
-            raise Exception
-    except Exception:
+        for virable in virable_list:
+            all(virable)
+    except Exception as error:
         logging.critical(
-            'Одной из глобальных переменных окружения не существует')
+            f'Одной из переменных окружения не существует: {error}')
         sys.exit()
 
 
