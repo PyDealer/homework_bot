@@ -1,6 +1,7 @@
-# homework_bot
-python telegram bot
+## python telegram bot
 
 Бот отправляет запрос к api Яндекс.Практикум и провереяет статус проверки проекта, отправленного на ревью.
 
-В проекте использовалась библиотека python-telegram-bot
+## stack:
+
+Библиотека python-telegram-bot
